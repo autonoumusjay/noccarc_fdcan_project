@@ -19,7 +19,7 @@ typedef struct
     uint32_t framing_error;
     uint32_t noise_error;
     uint32_t overrun_error;
-    uint32_t dma_error;
+    volatile uint32_t dma_error;
 } UART_ErrorCounters_t;
 
 UART_DriverStatus_t UART_Init(uint32_t baudrate);

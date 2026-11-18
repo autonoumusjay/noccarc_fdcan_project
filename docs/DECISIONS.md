@@ -17,7 +17,7 @@ Existing target APIs are declared in `system/inc/FDCAN.h`, `FDCAN_Port.h`, `UART
 | Timing | 100 ms publish, 250 ms heartbeat, 350 ms freshness, 750 ms timeout, 250 ms dashboard | 100 ms publish, 200 ms heartbeat, 50 ms sweep, 300 ms freshness, 400 ms delayed, 600 ms timeout, 500 ms dashboard |
 | Scheduling | TIM2, 10 ms startup offsets, eight receive frames per pass | 1 ms timebase, 25/50 ms publication offsets, bounded receive and control queues. TIM2 is retained until an equivalent SysTick port is demonstrated. |
 | Recovery | Sequence-zero restart heuristic and periodic updates | Retained monotonic epoch or documented reset fallback, RECOVERING until heartbeat plus fresh owner block, targeted bounded resync |
-| UART | 169 bytes, NC header, CRC32, TX-ready polling | 316 bytes, AA55 header, type 0x10 and CRC16. Keep a bounded polling transport for Renode because its UART model exposes RX DMA requests only. |
+| UART | 169 bytes, NC header and CRC-32 over USART3 TX DMA. The earlier baseline used TX-ready polling. | 316 bytes, AA55 header, type 0x10 and CRC-16. The verified DMA transport can carry the revised format once the encoder and decoder migrate together. |
 | Watchdog | Main-loop checkpoint-gated watchdog and Renode stall/reset test | Nominal 1 s timeout, service-checkpoint gate, capture reset flags |
 | GUI | Three sections and UART link-loss handling | Same three sections fed by the matching 316-byte decoder, verified with live browser evidence |
 
@@ -47,7 +47,7 @@ The CAN protocol helper assigns type bytes 1–4 in order of emergency, resync, 
 | T16 | PASS | Baseline test inspects MCU3's four valid groups after reset. |
 | T17 | FAIL | Targeted resync is absent from running firmware. |
 | T18 | FAIL | Per-peer reported stale-owner mask is absent. |
-| T19 | PASS | Baseline UART capture decodes MCU1 telemetry with valid CRC. The new UART format is pending. |
+| T19 | PASS | The integrated Renode test records 14 MCU1 DMA completions and CRC-valid snapshots. The separate live PTY check passed. The 316-byte UART format is pending. |
 | T20 | PASS | Source audit confirms exactly three sections and decoder-sourced values. Live screenshot is pending. |
 | T21 | BLOCKED | CRC host test passed. Live browser verification is blocked by local socket permissions. |
 | T22 | PASS | Existing driver exposes real error state and counters. Renode physical limitations are documented. |

@@ -1,0 +1,89 @@
+[21:02:43.4004] [INFO] Loaded monitor commands from: /home/jt/tools/renode/scripts/monitor.py
+[0mRenode, version 1.17.0 (1.17.0+20261106git6549dbc07)
+
+[91m(monitor) [0minclude @/tmp/noccarc-dma-pty-0aw2qqop/live.resc
+[21:02:43.4410] [INFO] Including script(s): /tmp/noccarc-dma-pty-0aw2qqop/live.resc
+[21:02:43.6419] [INFO] System bus created.
+[21:02:44.6900] [INFO] Pseudorandom Number Generator was created with seed: 1022831788
+[21:02:44.8060] [INFO] sysbus: Loading block of 12760 bytes length at 0x8000000.
+[21:02:44.8095] [INFO] sysbus: Loading block of 592 bytes length at 0x80031D8.
+[21:02:44.8097] [INFO] sysbus: Loading block of 3072 bytes length at 0x80031E0.
+[21:02:45.1967] [INFO] System bus created.
+[21:02:45.4461] [INFO] node2/sysbus: Loading block of 10968 bytes length at 0x8000000.
+[21:02:45.4463] [INFO] node2/sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[21:02:45.4464] [INFO] node2/sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[21:02:45.4507] [INFO] System bus created.
+[21:02:45.7326] [INFO] node3/sysbus: Loading block of 10968 bytes length at 0x8000000.
+[21:02:45.7328] [INFO] node3/sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[21:02:45.7328] [INFO] node3/sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[21:02:45.7365] [INFO] System bus created.
+[21:02:46.0115] [INFO] node4/sysbus: Loading block of 10968 bytes length at 0x8000000.
+[21:02:46.0117] [INFO] node4/sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[21:02:46.0118] [INFO] node4/sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[21:02:46.0215] [INFO] node1/cpu: Guessing VectorTableOffset value to be 0x8000000.
+[21:02:46.0562] [INFO] node1/cpu: Setting initial values: PC = 0x800310D, SP = 0x20020000.
+[21:02:46.0584] [INFO] node1: Machine started.
+[21:02:46.0587] [INFO] node2/cpu: Guessing VectorTableOffset value to be 0x8000000.
+[21:02:46.0625] [INFO] node2/cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[21:02:46.0638] [INFO] node2: Machine started.
+[21:02:46.0639] [INFO] node3/cpu: Guessing VectorTableOffset value to be 0x8000000.
+[21:02:46.0671] [INFO] node3/cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[21:02:46.0764] [INFO] node3: Machine started.
+[21:02:46.0764] [INFO] node4/cpu: Guessing VectorTableOffset value to be 0x8000000.
+[21:02:46.0823] [INFO] node4/cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[21:02:46.0912] [INFO] node4: Machine started.
+[21:02:46.1883] [WARNING] node1/rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[21:02:46.1906] [WARNING] node1/rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[21:02:46.2241] [WARNING] node2/rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[21:02:46.2252] [WARNING] node2/rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[21:02:46.2302] [WARNING] node2/fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[21:02:46.2305] [WARNING] node2/fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[21:02:46.2411] [WARNING] node3/rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[21:02:46.2420] [WARNING] node3/rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[21:02:46.2442] [WARNING] node3/fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[21:02:46.2444] [WARNING] node3/fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[21:02:46.2623] [WARNING] node4/rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[21:02:46.2632] [WARNING] node4/rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[21:02:46.2658] [WARNING] node4/fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[21:02:46.2661] [WARNING] node4/fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[21:02:46.2667] [WARNING] node1/fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[21:02:46.2669] [WARNING] node1/fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[21:02:46.2740] [WARNING] node1/usart3: Unhandled write to offset 0x2C, value 0x0.
+[21:02:46.2748] [WARNING] node1/usart3: Unhandled write to offset 0x20. Unhandled bits: [0-3] when writing value 0x4F. Tags: PECF (0x1), FECF (0x1), NCF (0x1), ORECF (0x1).
+[21:02:46.2760] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:48.8794] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000000.
+[21:02:48.8799] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000020.
+[21:02:48.8800] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000040.
+[21:02:48.8800] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000060.
+[21:02:48.8800] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000080.
+[21:02:48.8800] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x300000A0.
+[21:02:48.8802] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:48.8804] [WARNING] node1/dma1: Unhandled write to offset 0x58. Unhandled bits: [1-2, 17] when writing value 0x20456. Tags: DMEIE (0x1), TEIE (0x1), PL (0x2).
+[21:02:48.8890] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:49.9258] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000000.
+[21:02:49.9258] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000020.
+[21:02:49.9259] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000040.
+[21:02:49.9259] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000060.
+[21:02:49.9259] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000080.
+[21:02:49.9259] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x300000A0.
+[21:02:49.9259] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:49.9259] [WARNING] node1/dma1: Unhandled write to offset 0x58. Unhandled bits: [1-2, 17] when writing value 0x20456. Tags: DMEIE (0x1), TEIE (0x1), PL (0x2).
+[21:02:49.9268] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:51.4765] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000000.
+[21:02:51.4766] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000020.
+[21:02:51.4766] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000040.
+[21:02:51.4766] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000060.
+[21:02:51.4766] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x30000080.
+[21:02:51.4766] [WARNING] node1/nvic: Unhandled write to offset 0xF68 (DCacheCleanByMVAToPoCAddress), value 0x300000A0.
+[21:02:51.4766] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:51.4766] [WARNING] node1/dma1: Unhandled write to offset 0x58. Unhandled bits: [1-2, 17] when writing value 0x20456. Tags: DMEIE (0x1), TEIE (0x1), PL (0x2).
+[21:02:51.4797] [WARNING] node1/dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[21:02:53.3985] [INFO] node1: Machine paused.
+[92mR[0m[92me[0m[92mn[0m[92mo[0m[92md[0m[92me[0m[92m [0m[92mi[0m[92ms[0m[92m [0m[92mq[0m[92mu[0m[92mi[0m[92mt[0m[92mt[0m[92mi[0m[92mn[0m[92mg[0m[92m[0m[92m
+[0m[92m[0m[0m[21:02:53.3988] [INFO] node2: Machine paused.
+[21:02:53.3988] [INFO] node3: Machine paused.
+[21:02:53.3988] [INFO] node4: Machine paused.
+[0m[21:02:53.4649] [INFO] node1: Disposed.
+[21:02:53.5076] [INFO] node2: Disposed.
+[21:02:53.5534] [INFO] node3: Disposed.
+[21:02:53.5946] [INFO] node4: Disposed.

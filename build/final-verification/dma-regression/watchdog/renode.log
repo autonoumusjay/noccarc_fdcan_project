@@ -1,0 +1,60 @@
+[22:33:22.9057] [INFO] Loaded monitor commands from: /home/jt/tools/renode/scripts/monitor.py
+[0mRenode, version 1.17.0 (1.17.0+20261106git6549dbc07)
+
+[91m(monitor) [0minclude @/home/jt/projects/noccarc_fdcan/build/final-verification/dma- regression/watchdog/watchdog.resc
+[22:33:22.9518] [INFO] Including script(s): /home/jt/projects/noccarc_fdcan/build/final-verification/dma-regression/watchdog/watchdog.resc
+[22:33:22.9653] [INFO] System bus created.
+[22:33:24.1858] [INFO] Pseudorandom Number Generator was created with seed: 1650576840
+[22:33:24.7624] [INFO] sysbus: Loading block of 10968 bytes length at 0x8000000.
+[22:33:24.7662] [INFO] sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[22:33:24.7664] [INFO] sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[22:33:24.8880] [INFO] cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[22:33:24.8908] [INFO] watchdog-test: Machine started.
+[22:33:24.9712] [WARNING] rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[22:33:24.9736] [WARNING] rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[22:33:24.9957] [WARNING] fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[22:33:24.9959] [WARNING] fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[22:33:25.0601] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:25.0601] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:25.4141] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:25.4141] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium? (3)
+[22:33:26.1426] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:26.3425] [WARNING] fdcan1: Tx FIFO is full
+[22:33:26.3430] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:26.3430] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:26.8667] [WARNING] fdcan1: Tx FIFO is full
+[22:33:26.8668] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:26.8668] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:27.2212] [WARNING] fdcan1: Tx FIFO is full
+[22:33:27.2216] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:27.2216] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:27.3257] [WARNING] fdcan1: Tx FIFO is full
+[22:33:27.3259] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:27.4020] [INFO] watchdog-test: Machine paused.
+FEEDS BEFORE STALL
+0x00000006
+STALL TIMER
+[22:33:27.4363] [INFO] watchdog-test: Machine resumed.
+[22:33:27.5433] [INFO] watchdog-test: Machine paused.
+PRE-EXPIRY
+[22:33:27.5452] [INFO] watchdog-test: Machine resumed.
+[22:33:27.5663] [WARNING] watchdog: Watchdog reset triggered!
+[22:33:27.5688] [INFO] watchdog-test: Machine paused.
+[22:33:27.5816] [INFO] sysbus: Loading block of 10968 bytes length at 0x8000000.
+[22:33:27.5818] [INFO] sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[22:33:27.5818] [INFO] sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[22:33:27.5850] [INFO] cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[22:33:27.5855] [INFO] watchdog-test: Machine resumed.
+[22:33:27.5862] [WARNING] rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[22:33:27.5867] [WARNING] rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[22:33:27.5877] [WARNING] fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[22:33:27.5878] [WARNING] fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[22:33:27.5937] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[22:33:27.5937] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium? (6)
+[22:33:27.7898] [WARNING] fdcan1: Tx FIFO is full
+[22:33:27.7902] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+FEEDS AFTER REBOOT
+0x00000003
+[22:33:27.9372] [INFO] watchdog-test: Machine paused.
+[92mR[0m[92me[0m[92mn[0m[92mo[0m[92md[0m[92me[0m[92m [0m[92mi[0m[92ms[0m[92m [0m[92mq[0m[92mu[0m[92mi[0m[92mt[0m[92mt[0m[92mi[0m[92mn[0m[92mg[0m[92m[0m[92m
+[0m[92m[0m[0m[0m[22:33:28.0039] [INFO] watchdog-test: Disposed.

@@ -1,0 +1,1 @@
+PASS: live DMA UART through the Renode PTY to Python, 4/4 online and 20/20 fresh, zero CRC errors.

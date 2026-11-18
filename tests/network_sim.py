@@ -29,6 +29,8 @@ def run(renode, build, output, reconnect_only=False):
                        'connector Connect sysbus.fdcan1 canHub'))
         if i == 1:
             script.append(f'sysbus.usart3 CreateFileBackend @{capture}')
+            dma_count = next(line.split()[0] for line in symbols.splitlines()
+                             if line.endswith(" g_telemetry_dma_completed"))
     def check_databases(stage):
         # ParameterGroup is 28 bytes on ARM. Its validity byte is at offset 26.
         for node, address in databases.items():
@@ -45,7 +47,8 @@ def run(renode, build, output, reconnect_only=False):
         script.extend(('machine Reset', f'sysbus LoadELF @{build}/node3/node3.elf'))
     script.extend(('connector Connect sysbus.fdcan1 canHub', 'emulation RunFor "1.0"'))
     check_databases("recovered")
-    script.append('quit')
+    script.extend(('mach set "node1"', 'echo "UART_DMA_COMPLETED"',
+                   f'sysbus ReadDoubleWord 0x{dma_count}', 'quit'))
     scenario = output / "fault-test.resc"
     scenario.write_text("\n".join(script) + "\n")
     if capture.exists():
@@ -63,6 +66,9 @@ def run(renode, build, output, reconnect_only=False):
     assert len(checks) == 32 and all(int(value, 16) == 1 for *_, value in checks), checks
     recovery_mode = "reconnect without reset" if reconnect_only else "reset and reconnect"
     print(f"All four local databases contain all 20 valid parameters before failure and after {recovery_mode}.")
+    count = re.search(r"UART_DMA_COMPLETED\s+0x([0-9a-fA-F]+)", console)
+    assert count and int(count[1], 16) >= 3, "MCU1 DMA completion counter did not advance"
+    print(f"MCU1 completed {int(count[1], 16)} USART3 TX DMA transfers.")
     decoder = Decoder()
     snapshots = list(decoder.feed(capture.read_bytes()))
     assert not decoder.errors, f"{decoder.errors} UART CRC errors"

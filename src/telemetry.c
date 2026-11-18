@@ -4,7 +4,10 @@
 
 enum { SNAPSHOT_MS = 250, FRAME_SIZE = 169 };
 static uint8_t frame[FRAME_SIZE];
-static unsigned cursor = FRAME_SIZE;
+_Static_assert(FRAME_SIZE <= NOCARC_UART_TX_BUFFER_SIZE, "Snapshot exceeds DMA buffer");
+static bool transfer_pending;
+static uint32_t errors_at_start;
+volatile uint32_t g_telemetry_dma_completed;
 static uint32_t last_snapshot;
 static uint32_t last_progress;
 
@@ -31,7 +34,20 @@ static uint32_t Crc32(unsigned length)
 
 void Telemetry_Service(const NetworkState *state, uint32_t now)
 {
-    if (cursor == FRAME_SIZE && now - last_snapshot >= SNAPSHOT_MS)
+    if (UART_IsTransmitBusy())
+        return;
+
+    if (transfer_pending)
+    {
+        transfer_pending = false;
+        if (UART_GetErrorCounters()->dma_error == errors_at_start)
+        {
+            ++g_telemetry_dma_completed;
+            last_progress = now;
+        }
+    }
+
+    if (now - last_snapshot >= SNAPSHOT_MS)
     {
         unsigned offset = 4;
         frame[0] = 'N';
@@ -60,17 +76,10 @@ void Telemetry_Service(const NetworkState *state, uint32_t now)
         }
         uint32_t crc = Crc32(offset);
         Write32(&offset, crc);
-        cursor = 0;
+        /* Capture the error count before submitting: the IRQ can run immediately. */
+        errors_at_start = UART_GetErrorCounters()->dma_error;
+        transfer_pending = UART_TransmitDMA(frame, FRAME_SIZE) == UART_DRIVER_OK;
         last_snapshot = now;
-    }
-
-    /* Bound UART work even when the peripheral is ready for a burst. */
-    for (unsigned i = 0; i < 8U && cursor < FRAME_SIZE; ++i)
-    {
-        if (!UART_TryTransmitByte(frame[cursor]))
-            break;
-        ++cursor;
-        last_progress = now;
     }
 }
 

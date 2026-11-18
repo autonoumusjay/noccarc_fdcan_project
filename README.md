@@ -38,7 +38,7 @@ The Renode monitor allows fault injection. Select node3 with `mach set "node3"`,
 
 ## Execution and UART protocol
 
-The startup path configures RCC, GPIO, a TIM2 monotonic tick and FDCAN. FDCAN RX IRQ records readiness. The main loop drains at most eight frames per pass, updates heartbeat state and runs due application tasks. The parameter and health databases are written in main context. The firmware allocates its state and telemetry buffers statically. The master UART service sends at most eight ready bytes per pass and never waits for UART TX.
+The startup path configures RCC, GPIO, a TIM2 monotonic tick and FDCAN. FDCAN RX IRQ records readiness. The main loop drains at most eight frames per pass, updates heartbeat state and runs due application tasks. The parameter and health databases are written in main context. The firmware allocates its state and telemetry buffers statically. MCU1 submits one UART snapshot through DMA1 Stream 3 when the prior transfer has completed. DMA sends the static staging buffer while the main loop continues servicing CAN.
 
 USART3 uses 115200 baud, 8 data bits, no parity and one stop bit. The 169-byte snapshot frame uses little-endian fields.
 
@@ -53,9 +53,9 @@ MCU1 produces one snapshot every 250 ms. The Python parser handles partial reads
 
 ## Verification evidence
 
-[Scenario results](build/simulation/results.txt) cover normal operation, disconnection of MCU3 and recovery after reloading its firmware. The test inspects all four local databases before and after the outage, and uses MCU1 UART snapshots to verify 4/4 → 3/4 → 4/4 online and 20/20 → 15/20 → 20/20 fresh parameters. [Dashboard replay](build/simulation/dashboard-replay.html) opens directly in a browser and cycles through the captured UART snapshots. The simulation test regenerates it, the binary UART capture and the Renode log. Live Renode USART3 output was also decoded through the UART PTY.
+[Scenario results](build/simulation/results.txt) cover normal operation, disconnection of MCU3 and recovery after reloading its firmware. The test inspects all four local databases before and after the outage, and uses MCU1 UART snapshots to verify 4/4 → 3/4 → 4/4 online and 20/20 → 15/20 → 20/20 fresh parameters. [Dashboard replay](build/simulation/dashboard-replay.html) opens directly in a browser and cycles through the captured UART snapshots. The simulation test regenerates it, the binary UART capture and the Renode log. The [updated DMA run](build/final-verification/dashboard-dma/results.txt) recorded 14 USART3 TX DMA completions with CRC-valid snapshots during normal operation, outage, and recovery. A separate live run also decoded DMA-backed snapshots through the UART PTY. [DMA dashboard replay](build/final-verification/dashboard-dma/dashboard-replay.html).
 
-The [peripheral diagnostic](build/simulation/driver-diagnostic.log) reported 10 runtime passes, zero failures, one simulator skip and three symbol checks. The STM32H7 platform uses an STM32F7 USART model with RX DMA requests only, so the diagnostic skips TX DMA in the Renode profile. MCU1's assignment telemetry uses non-blocking TX-ready polling. Hardware-only checks include physical CAN timing, board power setup and USART3 TX DMA.
+The [peripheral diagnostic](build/simulation/driver-diagnostic.log) reported 10 runtime passes, zero failures, one simulator skip and three symbol checks. The default diagnostic skipped TX DMA under the Renode profile. The later standalone retest and the four-node dashboard DMA test exercise TX DMA in the installed model. Physical CAN timing, board power setup and hardware DMA timing remain unverified.
 
 ## Engineering report and final checks
 

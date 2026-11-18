@@ -4,6 +4,7 @@
 #include "RCC_Clock.h"
 #include "Timer.h"
 #include "UART.h"
+#include "DMA.h"
 #include "Watchdog.h"
 #include "peripheral_config.h"
 #include "network_state.h"
@@ -122,7 +123,8 @@ int main(void)
             g_network_init_error = 2;
         else if (FDCAN_Port_Init() != FDCAN_OK)
             g_network_init_error = 3;
-        else if (NODE_ID == 1 && UART_Init(NOCARC_UART_BAUDRATE) != UART_DRIVER_OK)
+        else if (NODE_ID == 1 && (UART_Init(NOCARC_UART_BAUDRATE) != UART_DRIVER_OK ||
+                                  DMA_Init() != DMA_DRIVER_OK))
             g_network_init_error = 4;
     }
     if (!g_network_init_error)
