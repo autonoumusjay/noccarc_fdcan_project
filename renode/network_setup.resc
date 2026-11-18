@@ -1,0 +1,30 @@
+$name?="noccarcUart"
+$uart?="/tmp/noccarc-uart"
+emulation SetGlobalSerialExecution True
+emulation SetGlobalQuantum "0.0001"
+emulation CreateCANHub "canHub"
+mach create "node1"
+machine LoadPlatformDescription @renode/assignment.repl
+sysbus LoadELF @build/node1/node1.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+emulation CreateUartPtyTerminal $name $uart
+connector Connect sysbus.usart3 $name
+
+mach create "node2"
+machine LoadPlatformDescription @renode/assignment.repl
+sysbus LoadELF @build/node2/node2.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+
+mach create "node3"
+machine LoadPlatformDescription @renode/assignment.repl
+sysbus LoadELF @build/node3/node3.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+
+mach create "node4"
+machine LoadPlatformDescription @renode/assignment.repl
+sysbus LoadELF @build/node4/node4.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub

@@ -23,7 +23,15 @@ python3 dashboard/monitor.py /tmp/noccarc-uart
 
 Open http://127.0.0.1:8765. To replay a captured fault demonstration, run `python3 dashboard/monitor.py --replay build/simulation/uart.bin`.
 
-The Renode monitor allows fault injection. Select node3 with `mach set "node3"`, disconnect it with `connector Disconnect sysbus.fdcan1 canHub`, and leave the other nodes running. To restart it, issue `machine Reset`, reload `sysbus LoadELF @/absolute/path/to/build/node3/node3.elf`, and reconnect with `connector Connect sysbus.fdcan1 canHub`. The automated test does this and checks a normal, offline and recovered snapshot from MCU1.
+### Automatic dashboard demo
+
+Stop any previous Renode run before starting either launcher. Both modes use the same virtual UART path. If an earlier run left a dangling link, remove it with `[ -L /tmp/noccarc-uart ] && [ ! -e /tmp/noccarc-uart ] && rm -- /tmp/noccarc-uart` from your own terminal. Build the firmware first. Then start the Python dashboard in one terminal and open `http://127.0.0.1:8765`. Start recording while the page is waiting for MCU1. In a second terminal, run this from the repository root:
+
+```sh
+renode --disable-xwt --console renode/dashboard_demo.resc
+```
+
+The script labels each phase in the terminal and drives the dashboard through **4/4 online and 20/20 synchronized → 3/4 and 15/20 → 4/4 and 20/20**. After one simulated second it disconnects only MCU3. The healthy nodes run for 1.5 simulated seconds before MCU3 restarts. Renode pauses between phases to reload the ELF, then runs for one simulated second to show recovery. Wall-clock recording time depends on emulator speed. All four nodes continue running at the end. Use `renode/network.resc` for the stable four-node view and `renode/dashboard_demo.resc` for the MCU3 outage demo.
 
 `make mcu1 mcu2 loopback driver_test` builds the original bring-up programs. The project defaults to the Renode clock profile, which bypasses the board-specific power sequence. For a hardware build, run `make RENODE=0 firmware`. Hardware images are written to `build/hardware`. The 25 MHz HSE, supply and I/O assumptions require confirmation on the actual board.
 
@@ -49,7 +57,7 @@ USART3 uses 115200 baud, 8 data bits, no parity and one stop bit. The 169-byte s
 | 17 | Four 37-byte records in MCU order. Each record has flags followed by heartbeat age, missed count, recovery count, parameter sequence and five values, all 32-bit. Flags bits 0–4 indicate online, heartbeat seen, recovering, valid and fresh. Heartbeat age is `0xffffffff` before the first heartbeat. |
 | 165 | CRC-32 (IEEE) over bytes 0–164 |
 
-MCU1 produces one snapshot every 250 ms. The Python parser handles partial reads, resynchronizes on the header after corruption and rejects CRC mismatches. The dashboard shows UART loss after one second and marks retained data stale. Network health weighs each online controller and each fresh valid parameter equally, using `100 × (online + synchronized) / 24`. All values displayed come from MCU1.
+MCU1 produces one snapshot every 250 ms. The Python parser handles partial reads, resynchronizes on the header after corruption and rejects CRC mismatches. The dashboard shows UART loss after five wall-clock seconds without a CRC-valid snapshot and marks retained data stale. Firmware still sends every 250 ms of simulated time. Use `--link-timeout 1` for a one-second timeout on hardware. Network health weighs each online controller and each fresh valid parameter equally, using `100 × (online + synchronized) / 24`. All values displayed come from MCU1.
 
 ## Verification evidence
 

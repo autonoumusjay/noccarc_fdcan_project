@@ -2,6 +2,7 @@
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import math
 import os
 from pathlib import Path
 import termios
@@ -11,11 +12,14 @@ import tty
 
 from protocol import Decoder
 
+DEFAULT_LINK_TIMEOUT = 5.0  # Wall-clock seconds; Renode snapshots use simulated time.
+
 
 class Monitor:
-    def __init__(self, source, replay):
+    def __init__(self, source, replay, link_timeout=DEFAULT_LINK_TIMEOUT):
         self.source = source
         self.replay = replay
+        self.link_timeout = link_timeout
         self.decoder = Decoder()
         self.latest = None
 
@@ -42,7 +46,7 @@ class Monitor:
                             for snapshot in self.decoder.feed(data):
                                 self.latest = (time.monotonic(), snapshot)
                         time.sleep(0.25 if self.replay else 0.02)
-            except OSError:
+            except (OSError, termios.error):
                 pass
             self.decoder.buffer.clear()
             time.sleep(0.3)
@@ -50,7 +54,7 @@ class Monitor:
     def status(self):
         latest = self.latest
         return dict(snapshot=latest[1] if latest else None,
-                    live=bool(latest and time.monotonic() - latest[0] < 1.0),
+                    live=bool(latest and time.monotonic() - latest[0] < self.link_timeout),
                     replay=self.replay, errors=self.decoder.errors)
 
 
@@ -87,7 +91,11 @@ if __name__ == "__main__":
     parser.add_argument("source", help="UART device or Renode PTY path")
     parser.add_argument("--replay", action="store_true", help="Replay an MCU1 binary capture")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--link-timeout", type=float, default=DEFAULT_LINK_TIMEOUT,
+                        help="Wall-clock seconds without a valid frame before declaring UART loss")
     args = parser.parse_args()
-    monitor = Monitor(args.source, args.replay)
+    if not math.isfinite(args.link_timeout) or args.link_timeout <= 0:
+        parser.error("--link-timeout must be a finite positive number")
+    monitor = Monitor(args.source, args.replay, args.link_timeout)
     threading.Thread(target=monitor.read_forever, daemon=True).start()
     serve(monitor, args.port)

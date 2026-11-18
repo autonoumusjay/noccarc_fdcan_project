@@ -32,3 +32,13 @@ python3 tests/network_sim.py --output build/final-verification/network
 python3 tests/network_sim.py --reconnect-only --output build/final-verification/reconnect
 python3 tests/watchdog_sim.py
 ```
+
+## UART link-loss banner while MCU1 is still sending
+
+The firmware publishes every 250 ms of simulated time. Python uses wall time for the link-loss banner. On this host the old one-second rule falsely reported loss five times in the healthy run and six times in the MCU3 fault run. The longest measured gap was 4.20 wall-clock seconds, with valid UART CRCs.
+
+The monitor now defaults to five wall-clock seconds without a valid frame. Both Renode launchers completed with zero false link-loss transitions after the change. A separate PTY test verified that five seconds of silence still triggers link loss and a new valid frame restores the link. Use `--link-timeout 1` with a physical UART if a one-second threshold is appropriate.
+
+- [Before the fix](../build/submission-verification/uart-link/before.txt)
+- [After the fix](../build/submission-verification/uart-link/after.txt)
+- [Link-loss and restoration result](../build/submission-verification/uart-link/disconnect-reconnect.txt)

@@ -1,0 +1,2 @@
+normal: 8 valid UART snapshots; max wall gap 2.50s; 0 link-loss transitions during run; states [(4, 20)].
+fault: 14 valid UART snapshots; max wall gap 3.07s; 0 link-loss transitions during run; states [(4, 20), (4, 15), (3, 15), (4, 20)].

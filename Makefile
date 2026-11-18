@@ -120,6 +120,7 @@ test:
 	$(HOST_CC) -std=c11 -Wall -Wextra -Werror -Isrc tests/network_rx_ring_test.c -o build/tests/network_rx_ring_test
 	build/tests/network_rx_ring_test
 	PYTHONDONTWRITEBYTECODE=1 python3 tests/uart_protocol_test.py
+	PYTHONDONTWRITEBYTECODE=1 python3 tests/uart_monitor_test.py
 
 sim-test: firmware
 	PYTHONDONTWRITEBYTECODE=1 python3 tests/network_sim.py

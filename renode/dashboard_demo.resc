@@ -1,0 +1,20 @@
+# Run from the repository root after starting the Python dashboard.
+include @renode/network_setup.resc
+
+echo "DEMO 1/3: all four MCUs connected for 1 simulated second"
+emulation RunFor "1.0"
+
+echo "DEMO 2/3: isolating MCU3; the other nodes keep running"
+mach set "node3"
+connector Disconnect sysbus.fdcan1 canHub
+emulation RunFor "1.5"
+
+# RunFor leaves Renode paused, so loading the ELF is safe here.
+echo "DEMO 3/3: restarting and reconnecting MCU3"
+machine Reset
+sysbus LoadELF @build/node3/node3.elf
+connector Connect sysbus.fdcan1 canHub
+emulation RunFor "1.0"
+
+echo "DEMO complete: leaving all four MCUs running"
+start

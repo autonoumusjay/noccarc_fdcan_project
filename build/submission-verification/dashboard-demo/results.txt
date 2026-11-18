@@ -1,0 +1,1 @@
+PASS: live PTY observed [(4, 20), (4, 15), (3, 15), (4, 20)], including 4/20 → 3/15 → 4/20; zero CRC errors.

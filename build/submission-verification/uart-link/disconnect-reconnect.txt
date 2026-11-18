@@ -1,0 +1,1 @@
+PASS: stayed live across a 2-second gap, reported loss after 5 seconds of silence, and recovered on the next valid snapshot.
