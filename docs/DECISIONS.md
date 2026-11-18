@@ -30,21 +30,21 @@ The CAN protocol helper assigns type bytes 1–4 in order of emergency, resync, 
 | Test | Status | Evidence or gap |
 |---|---|---|
 | T01 | NOT_TESTED | Reference four-node host harness is unavailable locally. Renode baseline coverage is T09. |
-| T02 | NOT_TESTED | Code derives ownership from node ID. Exact ownership-boundary test is pending. |
+| T02 | NOT_TESTED | Running-firmware ownership is verified in Renode for every active owner group. A separate host ownership-boundary test is pending. |
 | T03 | PASS | Host tests cover DLC, CRC, exact length, ID/type, source, flags and reserved fields in the new codec. Firmware integration is pending. |
 | T04 | PASS | Existing host test covers 65535 to 0, duplicate and older sequence rejection. |
 | T05 | FAIL | No boot epoch in running firmware. |
 | T06 | FAIL | Running database tracks group validity. |
 | T07 | PASS | Host ring test covers full capacity, drop-newest, counter, unchanged tail, wrap and interleaved push/pop. ISR integration is pending. |
 | T08 | NOT_TESTED | FIFO0 only in the current app port. No two-producer stress test. |
-| T09 | PASS | Four-node baseline simulation and valid groups in all node databases. |
+| T09 | PASS | Four-node simulation checks freshness, validity, ownership and matching-sequence equality in all four databases. |
 | T10 | NOT_TESTED | Configuration and register writes were inspected. Target register readback has not been asserted by the harness. |
 | T11 | FAIL | Running heartbeat is 250 ms. |
-| T12 | PASS | Baseline MCU3 isolation invalidates P11–P15, with 15 fresh values remaining. |
+| T12 | PASS | All three healthy nodes invalidate P11–P15 and each retains 15 fresh values during MCU3 isolation. |
 | T13 | PASS | Baseline UART captures show healthy peers' update sequences advance during isolation. |
 | T14 | FAIL | No same-epoch reconnect distinction. |
 | T15 | FAIL | Restart is demonstrated, but no epoch and confirmation contract yet. |
-| T16 | PASS | Baseline test inspects MCU3's four valid groups after reset. |
+| T16 | PASS | Renode directly checks that all four groups on MCU3 are fresh and valid after reset. |
 | T17 | FAIL | Targeted resync is absent from running firmware. |
 | T18 | FAIL | Per-peer reported stale-owner mask is absent. |
 | T19 | PASS | The integrated Renode test records 14 MCU1 DMA completions and CRC-valid snapshots. The separate live PTY check passed. The 316-byte UART format is pending. |

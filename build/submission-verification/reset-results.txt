@@ -1,0 +1,8 @@
+normal: 4 databases checked for freshness, validity, and ownership; 12 matching-sequence payload comparisons.
+offline: 3 databases checked for freshness, validity, and ownership; 6 matching-sequence payload comparisons.
+recovered: 4 databases checked for freshness, validity, and ownership; 12 matching-sequence payload comparisons.
+MCU1 completed 14 USART3 TX DMA transfers.
+MCU3 sequence 9 before outage, 2 after reset and reconnect.
+  250 ms normal: 4/4 online, 20/20 fresh, MCU3 missed=0 recoveries=0
+ 1750 ms MCU3 offline: 3/4 online, 15/20 fresh, MCU3 missed=3 recoveries=0
+ 2750 ms MCU3 recovered: 4/4 online, 20/20 fresh, MCU3 missed=6 recoveries=1

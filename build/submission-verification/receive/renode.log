@@ -1,0 +1,55 @@
+[23:38:11.5332] [INFO] Loaded monitor commands from: /home/jt/tools/renode/scripts/monitor.py
+[0mRenode, version 1.17.0 (1.17.0+20261106git6549dbc07)
+
+[91m(monitor) [0minclude @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/submiss ion-verification/receive/receive-test.resc
+[23:38:11.5897] [INFO] Including script(s): /home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/submission-verification/receive/receive-test.resc
+[23:38:11.6045] [INFO] System bus created.
+[23:38:13.1662] [INFO] Pseudorandom Number Generator was created with seed: 1717498809
+[23:38:13.3636] [INFO] sysbus: Loading block of 10968 bytes length at 0x8000000.
+[23:38:13.3675] [INFO] sysbus: Loading block of 404 bytes length at 0x8002AD8.
+[23:38:13.3676] [INFO] sysbus: Loading block of 3076 bytes length at 0x8002AE0.
+[23:38:13.8783] [INFO] cpu: Guessing VectorTableOffset value to be 0x8000000.
+[23:38:13.8919] [INFO] cpu: Setting initial values: PC = 0x8002A15, SP = 0x20020000.
+[23:38:13.8949] [INFO] receiver: Machine started.
+[23:38:14.0093] [WARNING] rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[23:38:14.0202] [WARNING] rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[23:38:14.0446] [WARNING] fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[23:38:14.0449] [WARNING] fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[23:38:14.0947] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[23:38:14.0947] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[23:38:14.2887] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[23:38:14.4728] [INFO] receiver: Machine paused.
+[23:38:14.5200] [INFO] receiver: Machine resumed.
+[23:38:14.5413] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[23:38:14.5614] [INFO] receiver: Machine paused.
+GROUP before
+[
+0x0B, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x0D, 0x00, 
+0x00, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 
+0xC8, 0x00, 0x00, 0x00, 0x07, 0x00, 0x01, 0x00, 
+]
+INVALID before
+0x00000000
+[23:38:14.6106] [INFO] receiver: Machine resumed.
+[23:38:14.6272] [INFO] receiver: Machine paused.
+GROUP after
+[
+0x0B, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x0D, 0x00, 
+0x00, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 
+0xC8, 0x00, 0x00, 0x00, 0x07, 0x00, 0x01, 0x00, 
+]
+INVALID after
+0x00000002
+[23:38:14.6450] [INFO] receiver: Machine resumed.
+[23:38:14.6854] [WARNING] fdcan1: FrameSent is not initialized. Is the controller connected to medium?
+[23:38:14.6860] [INFO] receiver: Machine paused.
+GROUP next
+[
+0x5B, 0x00, 0x00, 0x00, 0x5C, 0x00, 0x00, 0x00, 0x5D, 0x00, 
+0x00, 0x00, 0x5E, 0x00, 0x00, 0x00, 0x5F, 0x00, 0x00, 0x00, 
+0xF0, 0x00, 0x00, 0x00, 0x08, 0x00, 0x01, 0x00, 
+]
+INVALID next
+0x00000002
+[92mR[0m[92me[0m[92mn[0m[92mo[0m[92md[0m[92me[0m[92m [0m[92mi[0m[92ms[0m[92m [0m[92mq[0m[92mu[0m[92mi[0m[92mt[0m[92mt[0m[92mi[0m[92mn[0m[92mg[0m[92m[0m[92m
+[0m[92m[0m[0m[0m[23:38:14.7577] [INFO] receiver: Disposed.

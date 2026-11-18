@@ -1,0 +1,92 @@
+emulation SetGlobalSerialExecution True
+emulation SetGlobalQuantum "0.0001"
+emulation CreateCANHub "canHub"
+mach create "node1"
+machine LoadPlatformDescription @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/renode/assignment.repl
+sysbus LoadELF @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/node1/node1.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+sysbus.usart3 CreateFileBackend @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/submission-verification/reset/uart.bin
+mach create "node2"
+machine LoadPlatformDescription @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/renode/assignment.repl
+sysbus LoadELF @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/node2/node2.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+mach create "node3"
+machine LoadPlatformDescription @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/renode/assignment.repl
+sysbus LoadELF @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/node3/node3.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+mach create "node4"
+machine LoadPlatformDescription @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/renode/assignment.repl
+sysbus LoadELF @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/node4/node4.elf
+cpu PerformanceInMips 20
+connector Connect sysbus.fdcan1 canHub
+emulation RunFor "1.0"
+mach set "node1"
+echo "TICK normal 1"
+sysbus ReadDoubleWord 0x20000234
+echo "DATABASE normal 1"
+sysbus ReadBytes 0x20000024 112
+mach set "node2"
+echo "TICK normal 2"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE normal 2"
+sysbus ReadBytes 0x20000024 112
+mach set "node3"
+echo "TICK normal 3"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE normal 3"
+sysbus ReadBytes 0x20000024 112
+mach set "node4"
+echo "TICK normal 4"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE normal 4"
+sysbus ReadBytes 0x20000024 112
+mach set "node3"
+connector Disconnect sysbus.fdcan1 canHub
+emulation RunFor "1.5"
+mach set "node1"
+echo "TICK offline 1"
+sysbus ReadDoubleWord 0x20000234
+echo "DATABASE offline 1"
+sysbus ReadBytes 0x20000024 112
+mach set "node2"
+echo "TICK offline 2"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE offline 2"
+sysbus ReadBytes 0x20000024 112
+mach set "node4"
+echo "TICK offline 4"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE offline 4"
+sysbus ReadBytes 0x20000024 112
+mach set "node3"
+machine Reset
+sysbus LoadELF @/home/jt/Downloads/noccarc_fdcan_project.yzaoO4/build/node3/node3.elf
+connector Connect sysbus.fdcan1 canHub
+emulation RunFor "1.0"
+mach set "node1"
+echo "TICK recovered 1"
+sysbus ReadDoubleWord 0x20000234
+echo "DATABASE recovered 1"
+sysbus ReadBytes 0x20000024 112
+mach set "node2"
+echo "TICK recovered 2"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE recovered 2"
+sysbus ReadBytes 0x20000024 112
+mach set "node3"
+echo "TICK recovered 3"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE recovered 3"
+sysbus ReadBytes 0x20000024 112
+mach set "node4"
+echo "TICK recovered 4"
+sysbus ReadDoubleWord 0x20000178
+echo "DATABASE recovered 4"
+sysbus ReadBytes 0x20000024 112
+mach set "node1"
+echo "UART_DMA_COMPLETED"
+sysbus ReadDoubleWord 0x200001b4
+quit

@@ -3,3 +3,7 @@ __pycache__/
 *.o
 *.d
 *.map
+
+# LibreOffice temporary lock files
+.~lock.*#
+/build/tests/

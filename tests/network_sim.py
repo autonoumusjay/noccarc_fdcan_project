@@ -2,6 +2,7 @@
 import argparse
 import json
 import re
+import struct
 from pathlib import Path
 import subprocess
 import sys
@@ -17,11 +18,14 @@ def run(renode, build, output, reconnect_only=False):
               'emulation SetGlobalQuantum "0.0001"', 'emulation CreateCANHub "canHub"']
     capture = output / "uart.bin"
     databases = {}
+    ticks = {}
     for i in range(1, 5):
         elf = build / f"node{i}" / f"node{i}.elf"
         symbols = subprocess.check_output(["arm-none-eabi-nm", str(elf)], text=True)
         databases[i] = int(next(line.split()[0] for line in symbols.splitlines()
                                 if line.endswith(" g_network_state")), 16)
+        ticks[i] = int(next(line.split()[0] for line in symbols.splitlines()
+                            if line.endswith(" g_system_tick_ms")), 16)
         script.extend((f'mach create "node{i}"',
                        f'machine LoadPlatformDescription @{ROOT}/renode/assignment.repl',
                        f'sysbus LoadELF @{elf}',
@@ -31,18 +35,22 @@ def run(renode, build, output, reconnect_only=False):
             script.append(f'sysbus.usart3 CreateFileBackend @{capture}')
             dma_count = next(line.split()[0] for line in symbols.splitlines()
                              if line.endswith(" g_telemetry_dma_completed"))
+    group = struct.Struct("<5IIHBx")
+    stages = {"normal": (1, 2, 3, 4), "offline": (1, 2, 4), "recovered": (1, 2, 3, 4)}
+
     def check_databases(stage):
-        # ParameterGroup is 28 bytes on ARM. Its validity byte is at offset 26.
-        for node, address in databases.items():
-            script.append(f'mach set "node{node}"')
-            for group in range(4):
-                script.extend((f'echo "DATABASE {stage} {node} {group + 1}"',
-                               f'sysbus ReadByte 0x{address + group * 28 + 26:08x}'))
+        for node in stages[stage]:
+            script.extend((f'mach set "node{node}"', f'echo "TICK {stage} {node}"',
+                           f'sysbus ReadDoubleWord 0x{ticks[node]:08x}',
+                           f'echo "DATABASE {stage} {node}"',
+                           f'sysbus ReadBytes 0x{databases[node]:08x} {4 * group.size}'))
 
     script.append('emulation RunFor "1.0"')
     check_databases("normal")
     script.extend(('mach set "node3"', 'connector Disconnect sysbus.fdcan1 canHub',
                    'emulation RunFor "1.5"'))
+    check_databases("offline")
+    script.append('mach set "node3"')
     if not reconnect_only:
         script.extend(('machine Reset', f'sysbus LoadELF @{build}/node3/node3.elf'))
     script.extend(('connector Connect sysbus.fdcan1 canHub', 'emulation RunFor "1.0"'))
@@ -60,12 +68,45 @@ def run(renode, build, output, reconnect_only=False):
 
     transcript = (output / "renode.log").read_text(errors="replace")
     assert "Watchdog reset triggered!" not in transcript, "Unexpected watchdog reset"
-    console = re.sub(r"^\[\d{2}:\d{2}:\d{2}\.\d+\].*$", "", transcript, flags=re.M)
-    checks = re.findall(r"DATABASE (normal|recovered) ([1-4]) ([1-4])\s+0x([0-9a-fA-F]+)",
-                        console)
-    assert len(checks) == 32 and all(int(value, 16) == 1 for *_, value in checks), checks
+    # Renode can write a timestamped log line in the middle of a monitor marker.
+    console = re.sub(r"\[\d{2}:\d{2}:\d{2}\.\d+\][^\n]*\n", "", transcript)
+    db_rows = re.findall(r"DATABASE (normal|offline|recovered) ([1-4])\s+\[([^]]+)\]",
+                         console)
+    tick_rows = re.findall(r"TICK (normal|offline|recovered) ([1-4])\s+0x([0-9a-fA-F]+)",
+                           console)
+    db = {(stage, int(node)): bytes(int(v, 16) for v in re.findall(r"0x([0-9a-fA-F]{2})", raw))
+          for stage, node, raw in db_rows}
+    tick = {(stage, int(node)): int(raw, 16) for stage, node, raw in tick_rows}
+    expected = {(stage, node) for stage, nodes in stages.items() for node in nodes}
+    assert db.keys() == tick.keys() == expected, (db.keys(), tick.keys())
+    for stage, nodes in stages.items():
+        payloads = {}
+        matches = 0
+        for node in nodes:
+            assert len(db[stage, node]) == 4 * group.size
+            for owner, (*values, updated, sequence, valid) in enumerate(
+                group.iter_unpack(db[stage, node]), start=1
+            ):
+                should_be_valid = not (stage == "offline" and owner == 3)
+                assert bool(valid) == should_be_valid, (stage, node, owner, valid)
+                if not should_be_valid:
+                    continue
+                age = (tick[stage, node] - updated) & 0xffffffff
+                assert age < 350, (stage, node, owner, age)
+                offsets = {value - 1000 * ((owner - 1) * 5 + i)
+                           for i, value in enumerate(values, start=1)}
+                assert len(offsets) == 1 and 0 <= next(iter(offsets)) < 100, (
+                    stage, node, owner, values
+                )
+                key = (owner, sequence)
+                if key in payloads:
+                    assert payloads[key] == values, (stage, node, owner, sequence)
+                    matches += 1
+                payloads[key] = values
+        assert matches >= len(nodes), (stage, matches)
+        print(f"{stage}: {len(nodes)} databases checked for freshness, validity, and "
+              f"ownership; {matches} matching-sequence payload comparisons.")
     recovery_mode = "reconnect without reset" if reconnect_only else "reset and reconnect"
-    print(f"All four local databases contain all 20 valid parameters before failure and after {recovery_mode}.")
     count = re.search(r"UART_DMA_COMPLETED\s+0x([0-9a-fA-F]+)", console)
     assert count and int(count[1], 16) >= 3, "MCU1 DMA completion counter did not advance"
     print(f"MCU1 completed {int(count[1], 16)} USART3 TX DMA transfers.")

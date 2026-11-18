@@ -68,3 +68,14 @@ python3 tests/watchdog_sim.py
 ```
 
 The watchdog test stops TIM2 in a single isolated simulated MCU. It checks that IWDG expires and the firmware resumes feeding after reboot.
+
+## Submission package
+
+- [Requirement traceability](docs/NOCCARC_Requirement_Traceability.md)
+- [Architecture and algorithms](docs/NOCCARC_Architecture_And_Algorithms.md)
+- [Comprehensive Word report](docs/NOCCARC_Comprehensive_Firmware_Engineering_Report.docx)
+- [Editable report source](docs/NOCCARC_Comprehensive_Firmware_Engineering_Report.md)
+- [Verification matrix](docs/NOCCARC_Verification_Matrix.md)
+- [Open gaps and limitations](docs/NOCCARC_Open_Gaps_And_Limitations.md)
+
+The submission regression also checks all healthy local databases during MCU3 isolation. Run `python3 tests/can_receive_sim.py` to exercise the running receiver with malformed frames and a duplicate. Open the [submission replay](build/submission-verification/reset/dashboard-replay.html) to see the captured DMA-backed run.
