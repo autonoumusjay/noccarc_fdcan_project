@@ -1,0 +1,10 @@
+using "platforms/cpus/stm32h743.repl"
+
+rcc:
+    hseFrequency: 25000000
+
+usart3:
+    frequency: 100000000
+
+watchdog:
+    frequency: 32000

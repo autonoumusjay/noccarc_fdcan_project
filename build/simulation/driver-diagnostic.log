@@ -1,0 +1,89 @@
+[13:34:38.3267] [INFO] Loaded monitor commands from: /home/jt/tools/renode/scripts/monitor.py
+[0mRenode, version 1.17.0 (1.17.0+20261106git6549dbc07)
+
+[91m(monitor) [0minclude @/tmp/noccarc-final-build/diagnostic.resc
+[13:34:38.4024] [INFO] Including script(s): /tmp/noccarc-final-build/diagnostic.resc
+[13:34:38.4234] [INFO] System bus created.
+[13:34:39.8794] [INFO] Pseudorandom Number Generator was created with seed: 1778603154
+[13:34:40.0555] [INFO] sysbus: Loading block of 12120 bytes length at 0x8000000.
+[13:34:40.0590] [INFO] sysbus: Loading block of 368 bytes length at 0x8002F58.
+[13:34:40.0591] [INFO] sysbus: Loading block of 3072 bytes length at 0x8002F60.
+[13:34:40.7288] [INFO] cpu: Guessing VectorTableOffset value to be 0x8000000.
+[13:34:40.7475] [INFO] cpu: Setting initial values: PC = 0x8002C2D, SP = 0x20020000.
+[13:34:40.7508] [INFO] diagnostic: Machine started.
+[13:34:40.8474] [WARNING] rcc: Unhandled write to offset 0x2C. Unhandled bits: [3] when writing value 0x1FF0008. Tags: PLL1GRE (0x2).
+[13:34:40.8513] [WARNING] rcc: Unhandled write to offset 0x50. Unhandled bits: [28] when writing value 0x10000000. Tags: FDCANSEL (0x1).
+[13:34:40.9054] [WARNING] dma1: Unhandled write to offset 0x8. Unhandled bits: [22, 24-26] when writing value 0xF400000. Tags: CFEIF3 (0x1), CDMEIF3 (0x1), CTEIF3 (0x1), CHTIF3 (0x1).
+[13:34:40.9081] [WARNING] usart3: Unhandled write to offset 0x2C, value 0x0.
+[13:34:40.9094] [WARNING] usart3: Unhandled write to offset 0x20. Unhandled bits: [0-3] when writing value 0x4F. Tags: PECF (0x1), FECF (0x1), NCF (0x1), ORECF (0x1).
+[13:34:40.9155] [WARNING] fdcan1: Unhandled write to offset 0x1C. Unhandled bits: [1, 9-10, 16, 19, 26] when writing value 0x2090C01. Tags: NTSEG2 (0x1), NTSEG1 (0xC), NBRP (0x9), NSJW (0x1).
+[13:34:40.9157] [WARNING] fdcan1: Unhandled write to offset 0xC. Unhandled bits: [1, 5, 10-11, 16-17] when writing value 0x30611. Tags: DSJW (0x1), DTSEG (0x1), DTSEG1 (0x6), DBRP (0x3).
+[13:34:52.5171] [INFO] diagnostic: Machine paused.
+report 0
+0x44525654
+report 1
+0x0000000A
+report 2
+0x00000000
+report 3
+0x00000001
+report 4
+0x00000003
+report 5
+0x00000001
+report 6
+0x05F5E100
+report 7
+0x00000001
+report 8
+0x00000003
+report 9
+0x00000001
+report 10
+0x00000099
+report 11
+0x00000001
+report 12
+0x000C36CC
+report 13
+0x00000001
+report 14
+0x00000003
+report 15
+0x00000001
+report 16
+0x0000002E
+report 17
+0x00000001
+report 18
+0x00000364
+report 19
+0x00000001
+report 20
+0x00000000
+report 21
+0x00000003
+report 22
+0x00000000
+report 23
+0x00000001
+report 24
+0x00000004
+report 25
+0x00000004
+report 26
+0x08001A49
+report 27
+0x00000004
+report 28
+0x08002785
+report 29
+0x00000004
+report 30
+0x00000000
+report 31
+0x00000001
+report 32
+0x00FE0000
+[92mR[0m[92me[0m[92mn[0m[92mo[0m[92md[0m[92me[0m[92m [0m[92mi[0m[92ms[0m[92m [0m[92mq[0m[92mu[0m[92mi[0m[92mt[0m[92mt[0m[92mi[0m[92mn[0m[92mg[0m[92m[0m[92m
+[0m[92m[0m[0m[0m[13:34:52.6649] [INFO] diagnostic: Disposed.

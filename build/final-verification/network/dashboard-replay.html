@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noccarc CAN FD Monitor</title>
+<style>
+:root { color: #183239; background: #edf2f1; font: 15px system-ui, sans-serif }
+body { max-width: 1050px; margin: 24px auto; padding: 0 16px }
+h1 { margin: 0 0 16px; font-size: 26px }
+h2 { margin: 0 0 12px; font-size: 17px }
+section { background: white; padding: 14px 18px; margin: 0 0 12px; border: 1px solid #cad9d7; border-radius: 10px; overflow-x: auto }
+#overall { display: flex; flex-wrap: wrap; gap: 8px 28px; font-weight: 600 }
+#link { color: #456068; margin: 8px 0 0 }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; white-space: nowrap }
+td, th { padding: 4px 8px; text-align: left; border-bottom: 1px solid #edf2f1 }
+th { background: #edf5f3; color: #2f5052 }
+tr.invalid { background: #ffe8e4; color: #782921 }
+tr.stale { background: #fff1cf; color: #684b00 }
+</style>
+<h1>Noccarc CAN FD Monitor</h1>
+<section>
+  <h2>Overall Network Health</h2>
+  <div id="overall"></div>
+  <p id="link" role="status">Waiting for MCU1 UART</p>
+</section>
+<section>
+  <h2>Individual MCU Health</h2>
+  <table>
+    <thead><tr><th>MCU</th><th>State</th><th>Heartbeat</th><th>Age</th><th>Missed</th><th>Timeout</th><th>Recovery / sync</th></tr></thead>
+    <tbody id="nodes"></tbody>
+  </table>
+</section>
+<section>
+  <h2>Complete Parameter Monitoring</h2>
+  <table>
+    <thead><tr><th>Parameter</th><th>Value</th><th>Source</th><th>Freshness</th><th>Validity</th></tr></thead>
+    <tbody id="parameters"></tbody>
+  </table>
+</section>
+<script>
+const byId = id => document.getElementById(id);
+function row(body, cells, className) {
+  const tr = body.insertRow();
+  tr.className = className;
+  for (const value of cells) tr.insertCell().textContent = value;
+}
+function render({snapshot, live, replay, errors}) {
+  byId("link").textContent = (!snapshot ? "Waiting for MCU1 UART" :
+    replay ? "Captured MCU1 UART" : live ? "MCU1 UART live" :
+    "UART link lost · showing the last snapshot") + " · CRC errors " + errors;
+  if (!snapshot) return;
+  const {nodes, nominal, data_rate, brs} = snapshot;
+  const online = nodes.filter(n => n.online).length;
+  const sync = 5 * nodes.filter(n => n.online && n.valid && n.fresh).length;
+  const health = Math.round(100 * (online + sync) / 24);
+  const summary = [`${online}/4 controllers online`, `${sync}/20 synchronized`,
+    `${health}% health`, `${nominal / 1000} kbit/s arbitration`,
+    `${data_rate / 1000000} Mbit/s data`, `BRS ${brs ? "enabled" : "disabled"}`];
+  byId("overall").replaceChildren(...summary.map(text => {
+    const span = document.createElement("span"); span.textContent = text; return span;
+  }));
+  byId("nodes").replaceChildren();
+  byId("parameters").replaceChildren();
+  nodes.forEach((n, i) => {
+    const node = "MCU " + (i + 1);
+    const heartbeat = i === 0 ? "Local" : !n.seen ? "Waiting" : !n.online ? "Missing" :
+      n.age >= 375 ? "Delayed" : "Receiving";
+    const recovery = n.recovering ? "Waiting for parameters" :
+      n.fresh ? `Synchronized (${n.recoveries} recoveries)` : "Awaiting update";
+    row(byId("nodes"), [node, n.online ? "Online" : "Offline", heartbeat,
+      n.seen ? n.age + " ms" : "—", n.missed, n.seen && !n.online ? "Yes" : "No", recovery],
+      !n.online ? "invalid" : live || replay ? "" : "stale");
+    n.values.forEach((value, j) => {
+      const fresh = n.fresh && (live || replay);
+      row(byId("parameters"), ["P" + (i * 5 + j + 1), n.valid ? value : "—", node,
+        fresh ? "Fresh" : "Stale", n.valid ? "Valid" : "Invalid"],
+        !n.valid ? "invalid" : fresh ? "" : "stale");
+    });
+  });
+}
+async function poll() {
+  try {
+    const status = await fetch("/api/status");
+    if (!status.ok) throw new Error(status.status);
+    render(await status.json());
+  } catch {
+    byId("link").textContent = "Monitoring server disconnected";
+  }
+  setTimeout(poll, 250);
+}
+const recorded = [{"snapshot": {"tick": 250, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 2, "values": [1002, 2002, 3002, 4002, 5002]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 2, "values": [6002, 7002, 8002, 9002, 10002]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 230, "missed": 0, "recoveries": 0, "sequence": 2, "values": [11002, 12002, 13002, 14002, 15002]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 2, "values": [16002, 17002, 18002, 19002, 20002]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 500, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 5, "values": [1005, 2005, 3005, 4005, 5005]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 4, "values": [6004, 7004, 8004, 9004, 10004]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 230, "missed": 0, "recoveries": 0, "sequence": 4, "values": [11004, 12004, 13004, 14004, 15004]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 4, "values": [16004, 17004, 18004, 19004, 20004]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 750, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 7, "values": [1007, 2007, 3007, 4007, 5007]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 7, "values": [6007, 7007, 8007, 9007, 10007]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 230, "missed": 0, "recoveries": 0, "sequence": 7, "values": [11007, 12007, 13007, 14007, 15007]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 7, "values": [16007, 17007, 18007, 19007, 20007]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 1000, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 10, "values": [1010, 2010, 3010, 4010, 5010]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 9, "values": [6009, 7009, 8009, 9009, 10009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 230, "missed": 0, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 9, "values": [16009, 17009, 18009, 19009, 20009]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 1250, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 12, "values": [1012, 2012, 3012, 4012, 5012]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 12, "values": [6012, 7012, 8012, 9012, 10012]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 480, "missed": 1, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 12, "values": [16012, 17012, 18012, 19012, 20012]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 1500, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 15, "values": [1015, 2015, 3015, 4015, 5015]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 14, "values": [6014, 7014, 8014, 9014, 10014]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": false, "age": 730, "missed": 2, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 14, "values": [16014, 17014, 18014, 19014, 20014]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 1750, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 17, "values": [1017, 2017, 3017, 4017, 5017]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 17, "values": [6017, 7017, 8017, 9017, 10017]}, {"online": false, "seen": true, "recovering": false, "valid": false, "fresh": false, "age": 980, "missed": 3, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 17, "values": [16017, 17017, 18017, 19017, 20017]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 2000, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 20, "values": [1020, 2020, 3020, 4020, 5020]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 19, "values": [6019, 7019, 8019, 9019, 10019]}, {"online": false, "seen": true, "recovering": false, "valid": false, "fresh": false, "age": 1230, "missed": 4, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 19, "values": [16019, 17019, 18019, 19019, 20019]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 2250, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 22, "values": [1022, 2022, 3022, 4022, 5022]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 22, "values": [6022, 7022, 8022, 9022, 10022]}, {"online": false, "seen": true, "recovering": false, "valid": false, "fresh": false, "age": 1480, "missed": 5, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 22, "values": [16022, 17022, 18022, 19022, 20022]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 2500, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 25, "values": [1025, 2025, 3025, 4025, 5025]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 24, "values": [6024, 7024, 8024, 9024, 10024]}, {"online": false, "seen": true, "recovering": false, "valid": false, "fresh": false, "age": 1730, "missed": 6, "recoveries": 0, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 24, "values": [16024, 17024, 18024, 19024, 20024]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 2750, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 27, "values": [1027, 2027, 3027, 4027, 5027]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 27, "values": [6027, 7027, 8027, 9027, 10027]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 228, "missed": 6, "recoveries": 1, "sequence": 2, "values": [11002, 12002, 13002, 14002, 15002]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 27, "values": [16027, 17027, 18027, 19027, 20027]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 3000, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 30, "values": [1030, 2030, 3030, 4030, 5030]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 29, "values": [6029, 7029, 8029, 9029, 10029]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 228, "missed": 6, "recoveries": 1, "sequence": 4, "values": [11004, 12004, 13004, 14004, 15004]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 29, "values": [16029, 17029, 18029, 19029, 20029]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 3250, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 32, "values": [1032, 2032, 3032, 4032, 5032]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 32, "values": [6032, 7032, 8032, 9032, 10032]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 228, "missed": 6, "recoveries": 1, "sequence": 7, "values": [11007, 12007, 13007, 14007, 15007]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 32, "values": [16032, 17032, 18032, 19032, 20032]}]}, "replay": true, "live": false, "errors": 0}, {"snapshot": {"tick": 3500, "nominal": 500000, "data_rate": 2000000, "brs": true, "nodes": [{"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 0, "missed": 0, "recoveries": 0, "sequence": 35, "values": [1035, 2035, 3035, 4035, 5035]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 240, "missed": 0, "recoveries": 0, "sequence": 34, "values": [6034, 7034, 8034, 9034, 10034]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 228, "missed": 6, "recoveries": 1, "sequence": 9, "values": [11009, 12009, 13009, 14009, 15009]}, {"online": true, "seen": true, "recovering": false, "valid": true, "fresh": true, "age": 220, "missed": 0, "recoveries": 0, "sequence": 34, "values": [16034, 17034, 18034, 19034, 20034]}]}, "replay": true, "live": false, "errors": 0}]; let step = 0;function replayCapture() { render(recorded[step++ % recorded.length]); }replayCapture(); setInterval(replayCapture, 750);
+</script>
+</html>

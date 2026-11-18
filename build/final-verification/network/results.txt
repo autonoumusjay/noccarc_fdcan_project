@@ -1,0 +1,5 @@
+All four local databases contain all 20 valid parameters before failure and after reset and reconnect.
+MCU3 sequence 9 before outage, 2 after reset and reconnect.
+  250 ms normal: 4/4 online, 20/20 fresh, MCU3 missed=0 recoveries=0
+ 1750 ms MCU3 offline: 3/4 online, 15/20 fresh, MCU3 missed=3 recoveries=0
+ 2750 ms MCU3 recovered: 4/4 online, 20/20 fresh, MCU3 missed=6 recoveries=1

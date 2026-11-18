@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noccarc CAN FD Monitor</title>
+<style>
+:root { color: #183239; background: #edf2f1; font: 15px system-ui, sans-serif }
+body { max-width: 1050px; margin: 24px auto; padding: 0 16px }
+h1 { margin: 0 0 16px; font-size: 26px }
+h2 { margin: 0 0 12px; font-size: 17px }
+section { background: white; padding: 14px 18px; margin: 0 0 12px; border: 1px solid #cad9d7; border-radius: 10px; overflow-x: auto }
+#overall { display: flex; flex-wrap: wrap; gap: 8px 28px; font-weight: 600 }
+#link { color: #456068; margin: 8px 0 0 }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; white-space: nowrap }
+td, th { padding: 4px 8px; text-align: left; border-bottom: 1px solid #edf2f1 }
+th { background: #edf5f3; color: #2f5052 }
+tr.invalid { background: #ffe8e4; color: #782921 }
+tr.stale { background: #fff1cf; color: #684b00 }
+</style>
+<h1>Noccarc CAN FD Monitor</h1>
+<section>
+  <h2>Overall Network Health</h2>
+  <div id="overall"></div>
+  <p id="link" role="status">Waiting for MCU1 UART</p>
+</section>
+<section>
+  <h2>Individual MCU Health</h2>
+  <table>
+    <thead><tr><th>MCU</th><th>State</th><th>Heartbeat</th><th>Age</th><th>Missed</th><th>Timeout</th><th>Recovery / sync</th></tr></thead>
+    <tbody id="nodes"></tbody>
+  </table>
+</section>
+<section>
+  <h2>Complete Parameter Monitoring</h2>
+  <table>
+    <thead><tr><th>Parameter</th><th>Value</th><th>Source</th><th>Freshness</th><th>Validity</th></tr></thead>
+    <tbody id="parameters"></tbody>
+  </table>
+</section>
+<script>
+const byId = id => document.getElementById(id);
+function row(body, cells, className) {
+  const tr = body.insertRow();
+  tr.className = className;
+  for (const value of cells) tr.insertCell().textContent = value;
+}
+function render({snapshot, live, replay, errors}) {
+  byId("link").textContent = (!snapshot ? "Waiting for MCU1 UART" :
+    replay ? "Captured MCU1 UART" : live ? "MCU1 UART live" :
+    "UART link lost · showing the last snapshot") + " · CRC errors " + errors;
+  if (!snapshot) return;
+  const {nodes, nominal, data_rate, brs} = snapshot;
+  const online = nodes.filter(n => n.online).length;
+  const sync = 5 * nodes.filter(n => n.online && n.valid && n.fresh).length;
+  const health = Math.round(100 * (online + sync) / 24);
+  const summary = [`${online}/4 controllers online`, `${sync}/20 synchronized`,
+    `${health}% health`, `${nominal / 1000} kbit/s arbitration`,
+    `${data_rate / 1000000} Mbit/s data`, `BRS ${brs ? "enabled" : "disabled"}`];
+  byId("overall").replaceChildren(...summary.map(text => {
+    const span = document.createElement("span"); span.textContent = text; return span;
+  }));
+  byId("nodes").replaceChildren();
+  byId("parameters").replaceChildren();
+  nodes.forEach((n, i) => {
+    const node = "MCU " + (i + 1);
+    const heartbeat = i === 0 ? "Local" : !n.seen ? "Waiting" : !n.online ? "Missing" :
+      n.age >= 375 ? "Delayed" : "Receiving";
+    const recovery = n.recovering ? "Waiting for parameters" :
+      n.fresh ? `Synchronized (${n.recoveries} recoveries)` : "Awaiting update";
+    row(byId("nodes"), [node, n.online ? "Online" : "Offline", heartbeat,
+      n.seen ? n.age + " ms" : "—", n.missed, n.seen && !n.online ? "Yes" : "No", recovery],
+      !n.online ? "invalid" : live || replay ? "" : "stale");
+    n.values.forEach((value, j) => {
+      const fresh = n.fresh && (live || replay);
+      row(byId("parameters"), ["P" + (i * 5 + j + 1), n.valid ? value : "—", node,
+        fresh ? "Fresh" : "Stale", n.valid ? "Valid" : "Invalid"],
+        !n.valid ? "invalid" : fresh ? "" : "stale");
+    });
+  });
+}
+async function poll() {
+  try {
+    const status = await fetch("/api/status");
+    if (!status.ok) throw new Error(status.status);
+    render(await status.json());
+  } catch {
+    byId("link").textContent = "Monitoring server disconnected";
+  }
+  setTimeout(poll, 250);
+}
+poll();
+</script>
+</html>

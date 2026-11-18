@@ -1,0 +1,5 @@
+canMessageRAM: Memory.MappedMemory @ sysbus 0x4000AC00
+    size: 0x2800
+
+fdcan1: CAN.MCAN @ sysbus 0x4000A000
+    messageRAM: canMessageRAM

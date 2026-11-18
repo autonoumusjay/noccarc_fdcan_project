@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "STM32H743",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/include/CMSIS",
+                "${workspaceFolder}/include/CMSIS/**",
+                "${workspaceFolder}/system",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/system/inc"
+            ],
+            "defines": [
+                "STM32H743xx",
+                "RCC_Clock",
+                "GPIO",
+                "common",
+                "FDCAN"
+            ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "intelliSenseMode": "linux-gcc-arm",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++17"
+        }
+    ],
+    "version": 4
+}

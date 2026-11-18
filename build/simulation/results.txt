@@ -1,0 +1,29 @@
+make TARGET=node1 APP_SRC=src/main_network.c \
+	APP_MODULES="src/network_state.c src/telemetry.c" \
+	CPPFLAGS="-DNODE_ID=1" all
+make[1]: Entering directory '/home/jt/projects/noccarc_fdcan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/home/jt/projects/noccarc_fdcan'
+make TARGET=node2 APP_SRC=src/main_network.c \
+	APP_MODULES="src/network_state.c src/telemetry.c" \
+	CPPFLAGS="-DNODE_ID=2" all
+make[1]: Entering directory '/home/jt/projects/noccarc_fdcan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/home/jt/projects/noccarc_fdcan'
+make TARGET=node3 APP_SRC=src/main_network.c \
+	APP_MODULES="src/network_state.c src/telemetry.c" \
+	CPPFLAGS="-DNODE_ID=3" all
+make[1]: Entering directory '/home/jt/projects/noccarc_fdcan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/home/jt/projects/noccarc_fdcan'
+make TARGET=node4 APP_SRC=src/main_network.c \
+	APP_MODULES="src/network_state.c src/telemetry.c" \
+	CPPFLAGS="-DNODE_ID=4" all
+make[1]: Entering directory '/home/jt/projects/noccarc_fdcan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/home/jt/projects/noccarc_fdcan'
+PYTHONDONTWRITEBYTECODE=1 python3 tests/network_sim.py
+All four local databases contain all 20 valid parameters before failure and after restart.
+  250 ms normal: 4/4 online, 20/20 fresh, MCU3 missed=0 recoveries=0
+ 1750 ms MCU3 offline: 3/4 online, 15/20 fresh, MCU3 missed=3 recoveries=0
+ 2750 ms MCU3 recovered: 4/4 online, 20/20 fresh, MCU3 missed=6 recoveries=1
