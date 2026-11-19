@@ -79,6 +79,8 @@ The watchdog test stops TIM2 in a single isolated simulated MCU. It checks that 
 
 ## Submission package
 
+[Start here](START_HERE.md) for the numbered technical PDFs and video recordings.
+
 - [Requirement traceability](docs/NOCCARC_Requirement_Traceability.md)
 - [Architecture and algorithms](docs/NOCCARC_Architecture_And_Algorithms.md)
 - [Comprehensive Word report](docs/NOCCARC_Comprehensive_Firmware_Engineering_Report.docx)
